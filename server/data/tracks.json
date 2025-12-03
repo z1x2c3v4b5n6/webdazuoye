@@ -1,0 +1,173 @@
+[
+  {
+    "id": "track-basic-1",
+    "title": "云计算基础入门",
+    "level": "基础",
+    "tags": ["云计算", "入门"],
+    "summary": "理解云计算概念、服务模型与核心组件。",
+    "objectives": ["掌握IaaS/PaaS/SaaS", "理解虚拟化与弹性伸缩", "熟悉公有云与私有云差异"],
+    "chapters": [
+      {"title": "云计算概念", "lessons": ["定义与特点", "核心价值", "案例分析"]},
+      {"title": "云服务模型", "lessons": ["IaaS", "PaaS", "SaaS"]},
+      {"title": "部署模式", "lessons": ["公有云", "私有云", "混合云"]}
+    ],
+    "labs": ["使用虚拟机部署Web应用", "体验对象存储"],
+    "relatedResourceIds": ["res-article-1", "res-video-2"]
+  },
+  {
+    "id": "track-basic-2",
+    "title": "网络与安全基础",
+    "level": "基础",
+    "tags": ["网络", "安全"],
+    "summary": "云上网络、VPC、身份与访问控制基础。",
+    "objectives": ["理解VPC与子网", "安全组与ACL", "身份访问管理IAM"],
+    "chapters": [
+      {"title": "VPC 设计", "lessons": ["CIDR规划", "子网与路由", "NAT与网关"]},
+      {"title": "安全防护", "lessons": ["安全组", "ACL", "WAF"]}
+    ],
+    "labs": ["创建VPC并配置路由", "安全组规则实验"],
+    "relatedResourceIds": ["res-doc-3", "res-video-8"]
+  },
+  {
+    "id": "track-basic-3",
+    "title": "Linux 运维基础",
+    "level": "基础",
+    "tags": ["Linux", "运维"],
+    "summary": "命令行、进程、服务管理与故障排查。",
+    "objectives": ["熟练使用常用命令", "掌握systemd", "日志与监控"],
+    "chapters": [
+      {"title": "命令行基础", "lessons": ["文件操作", "用户权限", "管道与重定向"]},
+      {"title": "服务管理", "lessons": ["systemd", "日志查看", "常见问题"]}
+    ],
+    "labs": ["远程登录与用户管理", "编写启动脚本"],
+    "relatedResourceIds": ["res-article-4", "res-video-5"]
+  },
+  {
+    "id": "track-docker-1",
+    "title": "Docker 基础实战",
+    "level": "基础",
+    "tags": ["Docker", "容器"],
+    "summary": "Docker 架构、镜像、容器与网络。",
+    "objectives": ["安装与配置Docker", "构建镜像", "容器网络与存储"],
+    "chapters": [
+      {"title": "Docker 核心概念", "lessons": ["镜像", "容器", "Registry"]},
+      {"title": "镜像构建", "lessons": ["Dockerfile", "多阶段构建", "镜像优化"]},
+      {"title": "容器网络", "lessons": ["bridge", "host", "overlay"]}
+    ],
+    "labs": ["构建Node应用镜像", "Compose 启动多容器"],
+    "relatedResourceIds": ["res-lab-1", "res-video-10"]
+  },
+  {
+    "id": "track-docker-2",
+    "title": "Docker 进阶与CI/CD",
+    "level": "进阶",
+    "tags": ["Docker", "CI/CD"],
+    "summary": "镜像安全、CI/CD流水线与镜像扫描。",
+    "objectives": ["镜像扫描", "私有仓库", "CI/CD 集成"],
+    "chapters": [
+      {"title": "镜像安全", "lessons": ["最小化镜像", "漏洞扫描"]},
+      {"title": "CI/CD 集成", "lessons": ["GitHub Actions", "流水线设计"]}
+    ],
+    "labs": ["配置镜像扫描", "搭建私有Registry"],
+    "relatedResourceIds": ["res-article-12", "res-video-11"]
+  },
+  {
+    "id": "track-docker-3",
+    "title": "Docker 网络与存储",
+    "level": "进阶",
+    "tags": ["Docker", "网络"],
+    "summary": "深入理解容器网络模型与数据持久化方案。",
+    "objectives": ["熟悉CNI", "掌握Volume管理", "性能调优"],
+    "chapters": [
+      {"title": "网络模式详解", "lessons": ["bridge优化", "overlay实战", "service mesh"]},
+      {"title": "数据持久化", "lessons": ["Bind Mount", "Volume", "CSI简介"]}
+    ],
+    "labs": ["Overlay 网络搭建", "Volume 备份恢复"],
+    "relatedResourceIds": ["res-video-20", "res-lab-5"]
+  },
+  {
+    "id": "track-k8s-1",
+    "title": "Kubernetes 基础",
+    "level": "基础",
+    "tags": ["K8s", "容器编排"],
+    "summary": "K8s 架构、核心对象与kubectl。",
+    "objectives": ["掌握集群组件", "Pod/Service/Deployment", "kubectl 常用命令"],
+    "chapters": [
+      {"title": "集群架构", "lessons": ["Master 组件", "Node 组件", "调度流程"]},
+      {"title": "核心对象", "lessons": ["Pod", "Service", "Deployment"]}
+    ],
+    "labs": ["部署首个Pod", "暴露Service"],
+    "relatedResourceIds": ["res-video-15", "res-article-16"]
+  },
+  {
+    "id": "track-k8s-2",
+    "title": "Kubernetes 进阶运维",
+    "level": "进阶",
+    "tags": ["K8s", "运维"],
+    "summary": "ConfigMap/Secret、HPA、滚动升级与回滚。",
+    "objectives": ["掌握配置管理", "自动扩缩容", "升级与回滚策略"],
+    "chapters": [
+      {"title": "配置与密钥", "lessons": ["ConfigMap", "Secret"]},
+      {"title": "弹性伸缩", "lessons": ["HPA", "VPA概念"]},
+      {"title": "发布策略", "lessons": ["RollingUpdate", "Blue/Green", "Canary"]}
+    ],
+    "labs": ["HPA 配置", "滚动升级演练"],
+    "relatedResourceIds": ["res-article-18", "res-video-19"]
+  },
+  {
+    "id": "track-k8s-3",
+    "title": "Kubernetes 网络与存储",
+    "level": "进阶",
+    "tags": ["K8s", "网络"],
+    "summary": "Service 类型、Ingress、CNI、持久化存储。",
+    "objectives": ["Service 类型", "Ingress 控制器", "PV/PVC"] ,
+    "chapters": [
+      {"title": "Service与Ingress", "lessons": ["ClusterIP", "NodePort", "Ingress"]},
+      {"title": "存储管理", "lessons": ["PV/PVC", "StorageClass"]}
+    ],
+    "labs": ["部署Ingress", "使用CSI存储"] ,
+    "relatedResourceIds": ["res-doc-22", "res-video-23"]
+  },
+  {
+    "id": "track-k8s-4",
+    "title": "Kubernetes 可观测性",
+    "level": "进阶",
+    "tags": ["K8s", "监控"],
+    "summary": "日志、监控、告警、分布式追踪实践。",
+    "objectives": ["Prometheus", "Grafana", "ELK/EFK"] ,
+    "chapters": [
+      {"title": "监控体系", "lessons": ["Prometheus 架构", "指标收集"]},
+      {"title": "日志与追踪", "lessons": ["EFK 部署", "Tracing"]}
+    ],
+    "labs": ["部署Prometheus", "配置日志收集"] ,
+    "relatedResourceIds": ["res-article-30", "res-video-31"]
+  },
+  {
+    "id": "track-arch-1",
+    "title": "云原生架构设计",
+    "level": "进阶",
+    "tags": ["架构", "云原生"],
+    "summary": "微服务、服务网格、可观测性与弹性设计。",
+    "objectives": ["设计高可用架构", "服务网格", "弹性策略"],
+    "chapters": [
+      {"title": "微服务设计", "lessons": ["拆分原则", "API 设计"]},
+      {"title": "服务网格", "lessons": ["Istio 基础", "流量治理"]}
+    ],
+    "labs": ["设计高可用拓扑", "Istio 流量治理演练"],
+    "relatedResourceIds": ["res-article-25", "res-video-26"]
+  },
+  {
+    "id": "track-ops-1",
+    "title": "云上DevOps 实践",
+    "level": "进阶",
+    "tags": ["DevOps", "自动化"],
+    "summary": "流水线、监控与持续交付案例。",
+    "objectives": ["CI/CD", "自动化测试", "发布策略"],
+    "chapters": [
+      {"title": "流水线设计", "lessons": ["分支策略", "自动化测试"]},
+      {"title": "发布与回滚", "lessons": ["蓝绿部署", "金丝雀发布"]}
+    ],
+    "labs": ["构建CI流水线", "蓝绿部署演练"],
+    "relatedResourceIds": ["res-video-33", "res-article-34"]
+  }
+]

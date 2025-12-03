@@ -1,0 +1,9 @@
+* { box-sizing: border-box; }
+body { margin: 0; background: #f5f7fb; font-family: 'Inter', 'PingFang SC', sans-serif; }
+.logo { height: 64px; color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 700; letter-spacing: 1px; }
+.header-content { display: flex; align-items: center; justify-content: space-between; height: 64px; }
+.site-layout-background { background: #fff; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.06); }
+.card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px; }
+.section-title { margin: 12px 0 8px; font-weight: 600; }
+
+.ant-card { border-radius: 10px; }

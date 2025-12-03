@@ -1,0 +1,11 @@
+{
+  "name": "cloud-learning-platform",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "install-all": "cd server && npm install && cd ../frontend && npm install",
+    "dev": "npm run start-server & npm run start-web",
+    "start-server": "cd server && npm start",
+    "start-web": "cd frontend && npm run dev"
+  }
+}
