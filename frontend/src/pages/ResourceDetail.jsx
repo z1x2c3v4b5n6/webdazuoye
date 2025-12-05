@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { Card, Tag, Space, Button, Tabs, List, Empty } from 'antd';
 import { fetchResourceDetail } from '../api';
@@ -6,6 +6,7 @@ import LoadingState from '../components/LoadingState';
 import { useDispatch, useSelector } from 'react-redux';
 import { toggleFavorite } from '../store/slices/favoritesSlice';
 import { addRecentView } from '../store/slices/uiSlice';
+import { ThemeContext } from '../context/ThemeContext';
 
 const ResourceDetail = () => {
   const { id } = useParams();
@@ -14,6 +15,7 @@ const ResourceDetail = () => {
   const [error, setError] = useState('');
   const favorites = useSelector((state) => state.favorites.resources);
   const dispatch = useDispatch();
+  const { notify } = useContext(ThemeContext);
 
   const load = async () => {
     try {
@@ -34,7 +36,7 @@ const ResourceDetail = () => {
       {detail && (
         <Card
           title={detail.title}
-          extra={<Button type={isFav ? 'primary' : 'default'} onClick={() => dispatch(toggleFavorite({ item: detail, itemType: 'resource' }))}>{isFav ? '已收藏' : '收藏'}</Button>}
+          extra={<Button type={isFav ? 'primary' : 'default'} onClick={() => { dispatch(toggleFavorite({ item: detail, itemType: 'resource' })); notify?.('收藏状态已更新'); }}>{isFav ? '已收藏' : '收藏'}</Button>}
         >
           <Space wrap style={{ marginBottom: 12 }}>
             <Tag color="green">{detail.type}</Tag>

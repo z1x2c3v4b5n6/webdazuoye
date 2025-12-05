@@ -7,6 +7,7 @@ import TrackDetail from '../pages/TrackDetail';
 import Resources from '../pages/Resources';
 import ResourceDetail from '../pages/ResourceDetail';
 import Me from '../pages/Me';
+import Plan from '../pages/Plan';
 import NotFound from '../pages/NotFound';
 
 const RouterConfig = () => {
@@ -17,6 +18,7 @@ const RouterConfig = () => {
     { path: '/tracks/:id', element: <TrackDetail /> },
     { path: '/resources', element: <Resources /> },
     { path: '/resources/:id', element: <ResourceDetail /> },
+    { path: '/plan', element: <Plan /> },
     { path: '/me', element: <Me /> },
     { path: '*', element: <NotFound /> }
   ]);
