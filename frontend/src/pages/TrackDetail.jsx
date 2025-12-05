@@ -1,11 +1,15 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState, useContext, useCallback } from 'react';
 import { useParams } from 'react-router-dom';
-import { Card, Tag, Space, Button, Tabs, List, Empty } from 'antd';
+import {
+  Card, Tag, Space, Button, Tabs, List, Empty, Checkbox, Progress
+} from 'antd';
 import { fetchTrackDetail } from '../api';
 import LoadingState from '../components/LoadingState';
 import { useDispatch, useSelector } from 'react-redux';
 import { toggleFavorite } from '../store/slices/favoritesSlice';
 import { addRecentView } from '../store/slices/uiSlice';
+import { toggleLessonCompletion } from '../store/slices/progressSlice';
+import { ThemeContext } from '../context/ThemeContext';
 
 const TrackDetail = () => {
   const { id } = useParams();
@@ -13,7 +17,10 @@ const TrackDetail = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const favorites = useSelector((state) => state.favorites.tracks);
+  const completedLessons = useSelector((state) => state.progress.completedLessons[id] || {});
+  const trackProgress = useSelector((state) => state.progress.items[id] || 0);
   const dispatch = useDispatch();
+  const { notify } = useContext(ThemeContext);
 
   const load = async () => {
     try {
@@ -29,12 +36,44 @@ const TrackDetail = () => {
 
   const isFav = favorites.some((f) => f.id === id);
 
+  const totalLessons = useMemo(() => {
+    if (!detail) return 0;
+    return (detail.chapters || []).reduce((acc, chapter) => acc + (chapter.lessons?.length || 0), 0);
+  }, [detail]);
+
+  const completionPercent = useMemo(() => {
+    const finished = Object.values(completedLessons).filter(Boolean).length;
+    if (totalLessons > 0) {
+      return Math.min(100, Math.round((finished / totalLessons) * 100));
+    }
+    return trackProgress;
+  }, [completedLessons, totalLessons, trackProgress]);
+
+  const handleToggleLesson = useCallback((lessonKey) => {
+    dispatch(toggleLessonCompletion({ trackId: id, lessonId: lessonKey, totalLessons }));
+    notify?.('已更新章节完成状态');
+  }, [dispatch, id, totalLessons, notify]);
+
   return (
     <LoadingState loading={loading} error={error} onRetry={load}>
       {detail && (
         <Card
           title={detail.title}
-          extra={<Button type={isFav ? 'primary' : 'default'} onClick={() => dispatch(toggleFavorite({ item: detail, itemType: 'track' }))}>{isFav ? '已收藏' : '收藏'}</Button>}
+          extra=(
+            <Space>
+              <Progress
+                type="circle"
+                size={52}
+                percent={completionPercent}
+              />
+              <Button
+                type={isFav ? 'primary' : 'default'}
+                onClick={() => { dispatch(toggleFavorite({ item: detail, itemType: 'track' })); notify?.('收藏状态已更新'); }}
+              >
+                {isFav ? '已收藏' : '收藏'}
+              </Button>
+            </Space>
+          )
         >
           <Space wrap style={{ marginBottom: 12 }}>
             <Tag color={detail.level === '基础' ? 'blue' : 'purple'}>{detail.level}</Tag>
@@ -46,9 +85,23 @@ const TrackDetail = () => {
               { key: 'chapters', label: '章节', children: (
                 <List
                   dataSource={detail.chapters}
-                  renderItem={(c) => (
+                  renderItem={(c, cIndex) => (
                     <List.Item>
-                      <List.Item.Meta title={c.title} description={c.lessons.join(' / ')} />
+                      <List.Item.Meta title={c.title} description={(c.lessons || []).join(' / ')} />
+                      <Space direction="vertical" style={{ width: '100%' }}>
+                        {(c.lessons || []).map((lesson, lIndex) => {
+                          const lessonKey = `${id}::${cIndex}::${lIndex}`;
+                          return (
+                            <Checkbox
+                              key={lessonKey}
+                              checked={!!completedLessons[lessonKey]}
+                              onChange={() => handleToggleLesson(lessonKey)}
+                            >
+                              {lesson}
+                            </Checkbox>
+                          );
+                        })}
+                      </Space>
                     </List.Item>
                   )}
                 />

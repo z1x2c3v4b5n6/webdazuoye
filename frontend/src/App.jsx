@@ -1,6 +1,6 @@
 import React, { useContext, useMemo } from 'react';
 import { Layout, Menu, Breadcrumb, Switch, Typography, Space } from 'antd';
-import { HomeOutlined, DeploymentUnitOutlined, AppstoreOutlined, BookOutlined, UserOutlined, ThunderboltOutlined } from '@ant-design/icons';
+import { HomeOutlined, DeploymentUnitOutlined, AppstoreOutlined, BookOutlined, UserOutlined, ThunderboltOutlined, CalendarCheckOutlined } from '@ant-design/icons';
 import { Link, useLocation } from 'react-router-dom';
 import RouterConfig from './router';
 import { ThemeContext } from './context/ThemeContext';
@@ -23,6 +23,7 @@ const App = () => {
     { key: '/', icon: <HomeOutlined />, label: <Link to="/">仪表盘</Link> },
     { key: '/paths', icon: <DeploymentUnitOutlined />, label: <Link to="/paths">学习路线</Link> },
     { key: '/tracks', icon: <AppstoreOutlined />, label: <Link to="/tracks">专题列表</Link> },
+    { key: '/plan', icon: <CalendarCheckOutlined />, label: <Link to="/plan">学习计划</Link> },
     { key: '/resources', icon: <BookOutlined />, label: <Link to="/resources">资源库</Link> },
     { key: '/me', icon: <UserOutlined />, label: <Link to="/me">我的</Link> }
   ]), []);
