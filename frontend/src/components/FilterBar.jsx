@@ -18,27 +18,33 @@ const FilterBar = ({ value = {}, onChange, options = [] }) => {
     onChange?.({ ...value, ...changed });
   }, [onChange, value]);
 
+  const handleSearch = () => {
+    trigger({ q: keyword });
+  };
+
   return (
-    <Space wrap align="center" style={{ marginBottom: 16 }}>
-      <Input.Search
-        allowClear
-        placeholder="搜索标题或描述"
-        value={keyword}
-        onChange={(e) => setKeyword(e.target.value)}
-        onSearch={(v) => trigger({ q: v })}
-        style={{ width: 220 }}
-      />
-      {options.length > 0 && (
-        <Select
-          style={{ width: 160 }}
-          placeholder="选择类型"
-          value={extra || undefined}
+    <Space direction="vertical" style={{ marginBottom: 16, width: '100%' }} size="small">
+      <Space.Compact style={{ width: '100%', maxWidth: 520 }}>
+        <Input
           allowClear
-          options={options}
-          onChange={(val) => { setExtra(val || ''); trigger({ extra: val || '' }); }}
+          placeholder="搜索标题或描述"
+          value={keyword}
+          onChange={(e) => setKeyword(e.target.value)}
+          onPressEnter={handleSearch}
         />
-      )}
-      <Space>
+        {options.length > 0 && (
+          <Select
+            style={{ minWidth: 160 }}
+            placeholder="选择类型"
+            value={extra || undefined}
+            allowClear
+            options={options}
+            onChange={(val) => { setExtra(val || ''); trigger({ extra: val || '' }); }}
+          />
+        )}
+        <Button type="primary" onClick={handleSearch}>搜索</Button>
+      </Space.Compact>
+      <Space wrap align="center">
         {tagsPreset.map((t) => (
           <Tag.CheckableTag
             key={t}
@@ -48,8 +54,8 @@ const FilterBar = ({ value = {}, onChange, options = [] }) => {
             {t}
           </Tag.CheckableTag>
         ))}
+        <Button size="small" onClick={() => { setKeyword(''); setSelectedTag(''); trigger({ q: '', tag: '' }); }}>重置</Button>
       </Space>
-      <Button onClick={() => { setKeyword(''); setSelectedTag(''); trigger({ q: '', tag: '' }); }}>重置</Button>
     </Space>
   );
 };

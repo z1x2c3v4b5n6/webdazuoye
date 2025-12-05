@@ -20,7 +20,7 @@ const App = () => {
       : location.pathname;
 
   const menuItems = useMemo(() => ([
-    { key: '/', icon: <HomeOutlined />, label: <Link to="/">首页</Link> },
+    { key: '/', icon: <HomeOutlined />, label: <Link to="/">仪表盘</Link> },
     { key: '/paths', icon: <DeploymentUnitOutlined />, label: <Link to="/paths">学习路线</Link> },
     { key: '/tracks', icon: <AppstoreOutlined />, label: <Link to="/tracks">专题列表</Link> },
     { key: '/resources', icon: <BookOutlined />, label: <Link to="/resources">资源库</Link> },
@@ -32,21 +32,27 @@ const App = () => {
     dispatch(toggleTheme());
   };
 
+  const activeMenu = menuItems.find((m) => m.key === menuKey);
+  const menuTitle = menuKey === '/'
+    ? '仪表盘'
+    : activeMenu?.label?.props?.children || '页面';
+  const breadcrumbItems = [
+    { title: <Link to="/">首页</Link> },
+    { title: menuTitle }
+  ];
+
   return (
     <Layout style={{ minHeight: '100vh' }}>
       <Sider breakpoint="lg" collapsedWidth="0">
-        <div className="logo">云原生学习</div>
+        <div className="logo">云原生学习路径平台</div>
         <Menu theme="dark" mode="inline" selectedKeys={[menuKey]} items={menuItems} />
       </Sider>
       <Layout>
         <Header style={{ background: '#fff', padding: '0 24px' }}>
           <div className="header-content">
-            <Space size="large">
-              <Typography.Title level={4} style={{ margin: 0 }}>云计算 / Docker / K8s 学习路径</Typography.Title>
-              <Breadcrumb items={[
-                { title: <Link to="/">首页</Link> },
-                { title: menuKey !== '/' ? menuItems.find(m => m.key === menuKey)?.label : '概览' }
-              ]} />
+            <Space direction="vertical" size={0}>
+              <Typography.Title level={4} style={{ margin: 0 }}>云原生学习路径平台</Typography.Title>
+              <Breadcrumb items={breadcrumbItems} />
             </Space>
             <Space>
               <ThunderboltOutlined />
@@ -60,7 +66,7 @@ const App = () => {
             <RouterConfig />
           </div>
         </Content>
-        <Footer style={{ textAlign: 'center' }}>云计算学习路径平台 ©2024 课程大作业</Footer>
+        <Footer style={{ textAlign: 'center' }}>云原生学习路径平台 ©2024 课程大作业</Footer>
       </Layout>
     </Layout>
   );
