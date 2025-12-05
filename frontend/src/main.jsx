@@ -4,7 +4,7 @@ import { BrowserRouter } from 'react-router-dom';
 import { ConfigProvider, App as AntdApp, theme as antdTheme } from 'antd';
 import { Provider, useSelector } from 'react-redux';
 import App from './App';
-import store from './store';
+import store from './store/store';
 import { ThemeProvider, ThemeContext } from './context/ThemeContext';
 import './styles/global.css';
 
