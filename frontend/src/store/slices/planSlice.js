@@ -32,7 +32,7 @@ const planSlice = createSlice({
       const { id, changes } = action.payload;
       state.tasks = state.tasks.map((t) => (t.id === id ? { ...t, ...changes } : t));
     },
-    toggleTask(state, action) {
+    toggleTaskDone(state, action) {
       const id = action.payload;
       state.tasks = state.tasks.map((t) => {
         if (t.id !== id) return t;
@@ -44,11 +44,11 @@ const planSlice = createSlice({
         };
       });
     },
-    deleteTask(state, action) {
+    removeTask(state, action) {
       state.tasks = state.tasks.filter((t) => t.id !== action.payload);
     }
   }
 });
 
-export const { addTask, updateTask, toggleTask, deleteTask } = planSlice.actions;
+export const { addTask, updateTask, toggleTaskDone, removeTask } = planSlice.actions;
 export default planSlice.reducer;

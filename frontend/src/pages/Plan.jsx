@@ -25,8 +25,8 @@ import TaskList from '../components/TaskList';
 import {
   addTask,
   updateTask,
-  toggleTask,
-  deleteTask
+  toggleTaskDone,
+  removeTask
 } from '../store/slices/planSlice';
 import { ThemeContext } from '../context/ThemeContext';
 
@@ -47,10 +47,10 @@ const Plan = () => {
         fetchTracks({ pageSize: 50 }),
         fetchResources({ pageSize: 80 })
       ]);
-      setTracks(tRes.data.list || []);
-      setResources(rRes.data.list || []);
+      setTracks(tRes?.data?.list || []);
+      setResources(rRes?.data?.list || []);
     } catch (e) {
-      // ignore silently for offline mode
+      // offline fallback，无需打断用户
     }
   }, []);
 
@@ -58,13 +58,11 @@ const Plan = () => {
     loadOptions();
   }, [loadOptions]);
 
-  const filteredTasks = useMemo(() => {
-    return tasks.filter((task) => {
-      const stagePass = stageFilter === 'all' || task.stage === stageFilter;
-      const statusPass = statusFilter === 'all' || (statusFilter === 'active' ? !task.done : task.done);
-      return stagePass && statusPass;
-    });
-  }, [tasks, stageFilter, statusFilter]);
+  const filteredTasks = useMemo(() => tasks.filter((task) => {
+    const stagePass = stageFilter === 'all' || task.stage === stageFilter;
+    const statusPass = statusFilter === 'all' || (statusFilter === 'active' ? !task.done : task.done);
+    return stagePass && statusPass;
+  }), [tasks, stageFilter, statusFilter]);
 
   const stats = useMemo(() => {
     const now = new Date();
@@ -96,7 +94,7 @@ const Plan = () => {
   }, [dispatch, editingTask, notify]);
 
   const handleToggle = useCallback((id) => {
-    dispatch(toggleTask(id));
+    dispatch(toggleTaskDone(id));
     notify?.('任务状态已更新');
   }, [dispatch, notify]);
 
@@ -106,7 +104,7 @@ const Plan = () => {
   }, []);
 
   const handleDelete = useCallback((id) => {
-    dispatch(deleteTask(id));
+    dispatch(removeTask(id));
     notify?.('任务已删除');
   }, [dispatch, notify]);
 
