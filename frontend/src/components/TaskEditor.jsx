@@ -37,7 +37,8 @@ const TaskEditor = ({
       ...initialValues,
       ...values,
       dueDate: values.dueDate ? values.dueDate.format('YYYY-MM-DD') : '',
-      done: values.done || false
+      done: values.done || false,
+      note: values.note || ''
     });
     form.resetFields();
   };
@@ -58,11 +59,14 @@ const TaskEditor = ({
         <Form.Item label="阶段" name="stage" rules={[{ required: true, message: '请选择阶段' }]}>
           <Select options={stageOptions} placeholder="选择所属阶段" />
         </Form.Item>
-        <Form.Item label="截止日期" name="dueDate">
-          <DatePicker style={{ width: '100%' }} />
-        </Form.Item>
-        <Form.Item label="关联内容" required={false}>
-          <Space.Compact block>
+      <Form.Item label="截止日期" name="dueDate">
+        <DatePicker style={{ width: '100%' }} />
+      </Form.Item>
+      <Form.Item label="备注" name="note">
+        <Input.TextArea rows={3} placeholder="记录补充信息" />
+      </Form.Item>
+      <Form.Item label="关联内容" required={false}>
+        <Space.Compact block>
             <Form.Item name="linkedType" noStyle>
               <Select
                 placeholder="关联类型"

@@ -51,6 +51,7 @@ const TaskList = ({ tasks, onToggle, onEdit, onDelete }) => {
                     查看关联{task.linkedType === 'track' ? '专题' : '资源'}
                   </Link>
                 )}
+                {task.note && <Typography.Text type="secondary">备注：{task.note}</Typography.Text>}
               </Space>
             )}
           />
