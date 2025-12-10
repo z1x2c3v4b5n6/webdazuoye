@@ -3,6 +3,7 @@ import favoritesReducer from './slices/favoritesSlice';
 import progressReducer from './slices/progressSlice';
 import uiReducer from './slices/uiSlice';
 import planReducer from './slices/planSlice';
+import resourceStatusReducer from './slices/resourceStatusSlice';
 
 const loadState = () => {
   if (typeof window === 'undefined') return undefined;
@@ -22,7 +23,8 @@ const saveState = (state) => {
       favorites: state.favorites,
       progress: state.progress,
       ui: state.ui,
-      plan: state.plan
+      plan: state.plan,
+      resourceStatus: state.resourceStatus
     });
     localStorage.setItem('cloud-learning-state', serialized);
   } catch (e) {
@@ -35,7 +37,8 @@ const store = configureStore({
     favorites: favoritesReducer,
     progress: progressReducer,
     ui: uiReducer,
-    plan: planReducer
+    plan: planReducer,
+    resourceStatus: resourceStatusReducer
   },
   preloadedState: loadState()
 });

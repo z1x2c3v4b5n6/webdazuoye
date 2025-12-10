@@ -1,12 +1,13 @@
 import React, { useEffect, useState, useContext } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { Card, Tag, Space, Button, Tabs, List, Empty } from 'antd';
+import { Card, Tag, Space, Button, Tabs, List, Empty, Segmented } from 'antd';
 import { fetchResourceDetail } from '../api';
 import LoadingState from '../components/LoadingState';
 import { useDispatch, useSelector } from 'react-redux';
 import { toggleFavorite } from '../store/slices/favoritesSlice';
 import { addRecentView } from '../store/slices/uiSlice';
 import { ThemeContext } from '../context/ThemeContext';
+import { setStatus } from '../store/slices/resourceStatusSlice';
 
 const ResourceDetail = () => {
   const { id } = useParams();
@@ -14,6 +15,7 @@ const ResourceDetail = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const favorites = useSelector((state) => state.favorites.resources);
+  const status = useSelector((state) => state.resourceStatus.statuses[id] || 'todo');
   const dispatch = useDispatch();
   const { notify } = useContext(ThemeContext);
 
@@ -31,15 +33,35 @@ const ResourceDetail = () => {
 
   const isFav = favorites.some((f) => f.id === id);
 
+  const handleStatusChange = (val) => {
+    dispatch(setStatus({ resourceId: id, status: val }));
+    notify?.('学习状态已更新');
+  };
+
   return (
     <LoadingState loading={loading} error={error} onRetry={load}>
       {detail && (
         <Card
           title={detail.title}
-          extra={<Button type={isFav ? 'primary' : 'default'} onClick={() => { dispatch(toggleFavorite({ item: detail, itemType: 'resource' })); notify?.('收藏状态已更新'); }}>{isFav ? '已收藏' : '收藏'}</Button>}
+          extra={(
+            <Space>
+              <Segmented
+                size="small"
+                value={status}
+                onChange={handleStatusChange}
+                options={[
+                  { label: '未看', value: 'todo' },
+                  { label: '在看', value: 'doing' },
+                  { label: '已看', value: 'done' }
+                ]}
+              />
+              <Button type={isFav ? 'primary' : 'default'} onClick={() => { dispatch(toggleFavorite({ item: detail, itemType: 'resource' })); notify?.('收藏状态已更新'); }}>{isFav ? '已收藏' : '收藏'}</Button>
+            </Space>
+          )}
         >
           <Space wrap style={{ marginBottom: 12 }}>
             <Tag color="green">{detail.type}</Tag>
+            <Tag color={status === 'done' ? 'green' : status === 'doing' ? 'blue' : 'default'}>{status === 'todo' ? '未看' : status === 'doing' ? '在看' : '已看'}</Tag>
             {detail.tags.map((t) => <Tag key={t}>{t}</Tag>)}
           </Space>
           <Tabs

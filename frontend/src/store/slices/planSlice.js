@@ -23,7 +23,8 @@ const planSlice = createSlice({
             linkedType: task.linkedType || null,
             linkedId: task.linkedId || null,
             createdAt: task.createdAt || new Date().toISOString(),
-            completedAt: task.completedAt || null
+            completedAt: task.completedAt || null,
+            note: task.note || ''
           }
         };
       }

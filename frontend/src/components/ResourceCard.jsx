@@ -1,11 +1,23 @@
 import React from 'react';
-import { Card, Tag, Button, Space, Typography } from 'antd';
+import { Card, Tag, Button, Space, Typography, Segmented } from 'antd';
 import { HeartOutlined, HeartFilled, LinkOutlined } from '@ant-design/icons';
 import { useDispatch, useSelector } from 'react-redux';
 import { toggleFavorite } from '../store/slices/favoritesSlice';
 import { Link } from 'react-router-dom';
 
-const ResourceCard = ({ resource, onFavorite }) => {
+const statusLabel = {
+  todo: '未看',
+  doing: '在看',
+  done: '已看'
+};
+
+const statusColor = {
+  todo: 'default',
+  doing: 'blue',
+  done: 'green'
+};
+
+const ResourceCard = ({ resource, onFavorite, status = 'todo', onStatusChange, onAddPlan }) => {
   const favorites = useSelector((state) => state.favorites.resources);
   const dispatch = useDispatch();
   const isFav = favorites.some((f) => f.id === resource.id);
@@ -27,9 +39,23 @@ const ResourceCard = ({ resource, onFavorite }) => {
       </Space>
       <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 12 }}>
         <span>难度：{resource.difficulty}</span>
-        <Button size="small" type={isFav ? 'primary' : 'default'} icon={isFav ? <HeartFilled /> : <HeartOutlined />} onClick={handleFavorite}>
-          {isFav ? '已收藏' : '收藏'}
-        </Button>
+        <Space>
+          <Tag color={statusColor[status]}>{statusLabel[status] || '未看'}</Tag>
+          <Segmented
+            size="small"
+            options={[
+              { label: '未看', value: 'todo' },
+              { label: '在看', value: 'doing' },
+              { label: '已看', value: 'done' }
+            ]}
+            value={status}
+            onChange={(val) => onStatusChange?.(resource.id, val)}
+          />
+          <Button size="small" onClick={() => onAddPlan?.(resource)}>加入计划</Button>
+          <Button size="small" type={isFav ? 'primary' : 'default'} icon={isFav ? <HeartFilled /> : <HeartOutlined />} onClick={handleFavorite}>
+            {isFav ? '已收藏' : '收藏'}
+          </Button>
+        </Space>
       </div>
     </Card>
   );
