@@ -5,7 +5,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { toggleFavorite } from '../store/slices/favoritesSlice';
 import { Link } from 'react-router-dom';
 
-const TrackCard = ({ track, onFavorite }) => {
+const TrackCard = ({ track, onFavorite, onAddPlan }) => {
   const favorites = useSelector((state) => state.favorites.tracks);
   const progress = useSelector((state) => state.progress.items[track.id] || 0);
   const dispatch = useDispatch();
@@ -30,9 +30,12 @@ const TrackCard = ({ track, onFavorite }) => {
       </div>
       <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 12 }}>
         <span>章节：{track.chapters.length} · 实验：{track.labs.length}</span>
-        <Button type={isFav ? 'primary' : 'default'} icon={isFav ? <HeartFilled /> : <HeartOutlined />} onClick={handleFavorite}>
-          {isFav ? '已收藏' : '收藏'}
-        </Button>
+        <Space>
+          <Button onClick={() => onAddPlan?.(track)}>加入计划</Button>
+          <Button type={isFav ? 'primary' : 'default'} icon={isFav ? <HeartFilled /> : <HeartOutlined />} onClick={handleFavorite}>
+            {isFav ? '已收藏' : '收藏'}
+          </Button>
+        </Space>
       </div>
     </Card>
   );

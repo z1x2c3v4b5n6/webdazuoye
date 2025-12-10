@@ -1,8 +1,12 @@
-import React, { useEffect, useMemo, useState } from 'react';
-import { Row, Col, Card, List, Tag, Typography, Divider, Progress, Button, Space, Result, Spin, Empty } from 'antd';
+import React, { useEffect, useMemo, useState, useContext } from 'react';
+import dayjs from 'dayjs';
+import { Row, Col, Card, List, Tag, Typography, Divider, Progress, Button, Space, Result, Spin, Empty, Statistic } from 'antd';
 import { Link } from 'react-router-dom';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { fetchRecommendations } from '../api';
+import recommendScore from '../utils/recommendScore';
+import { ThemeContext } from '../context/ThemeContext';
+import { markMilestoneSeen } from '../store/slices/uiSlice';
 
 const fallbackRecommendations = {
   tracks: [
@@ -28,6 +32,11 @@ const Home = () => {
   const [errorCode, setErrorCode] = useState(null);
   const progress = useSelector((state) => state.progress.items || {});
   const recentViews = useSelector((state) => state.ui.recentViews || []);
+  const milestonesSeen = useSelector((state) => state.ui.milestonesSeen || {});
+  const tasks = useSelector((state) => state.plan.tasks || []);
+  const favorites = useSelector((state) => state.favorites || { tracks: [], resources: [] });
+  const dispatch = useDispatch();
+  const { notify } = useContext(ThemeContext);
 
   const avgProgress = useMemo(() => {
     const values = Object.values(progress);
@@ -41,7 +50,22 @@ const Home = () => {
       setErrorCode(null);
       const res = await fetchRecommendations();
       const payload = res?.data || { tracks: [], resources: [] };
-      setData(payload);
+      const favoriteTags = new Set([
+        ...(favorites.tracks || []).flatMap((t) => t.tags || []),
+        ...(favorites.resources || []).flatMap((r) => r.tags || [])
+      ]);
+      const favoriteLevels = new Set((favorites.tracks || []).map((t) => t.level).filter(Boolean));
+      const recentStage = (() => {
+        const recent = recentViews[0];
+        const id = recent?.id || '';
+        if (id.includes('docker')) return 'docker';
+        if (id.includes('k8s')) return 'k8s';
+        return id ? 'cloud' : null;
+      })();
+      const profile = { favoriteTags, favoriteLevels, recentStage };
+      const sortedTracks = [...(payload.tracks || [])].sort((a, b) => recommendScore(b, profile) - recommendScore(a, profile));
+      const sortedResources = [...(payload.resources || [])].sort((a, b) => recommendScore(b, profile) - recommendScore(a, profile));
+      setData({ tracks: sortedTracks, resources: sortedResources });
       const hasData = (payload.tracks?.length || 0) + (payload.resources?.length || 0) > 0;
       setStatus(hasData ? 'success' : 'empty');
     } catch (err) {
@@ -52,7 +76,7 @@ const Home = () => {
 
   useEffect(() => {
     loadData();
-  }, []);
+  }, [favorites, recentViews]);
 
   const renderProgress = () => (
     <Row gutter={16}>
@@ -138,8 +162,86 @@ const Home = () => {
     );
   };
 
+  const todayStats = useMemo(() => {
+    const unfinished = tasks.filter((t) => !t.done);
+    const overdue = unfinished.filter((t) => t.dueDate && dayjs(t.dueDate).isBefore(dayjs(), 'day'));
+    const nearestDue = unfinished
+      .filter((t) => t.dueDate)
+      .sort((a, b) => dayjs(a.dueDate).valueOf() - dayjs(b.dueDate).valueOf())[0];
+    return {
+      count: unfinished.length,
+      overdue: overdue.length,
+      nearest: nearestDue?.dueDate || '--'
+    };
+  }, [tasks]);
+
+  const stagePercents = useMemo(() => {
+    const grouped = { cloud: [], docker: [], k8s: [] };
+    Object.entries(progress).forEach(([id, value]) => {
+      if (id.includes('docker')) grouped.docker.push(value);
+      else if (id.includes('k8s')) grouped.k8s.push(value);
+      else grouped.cloud.push(value);
+    });
+    const average = (arr) => (arr.length ? Math.round(arr.reduce((a, b) => a + b, 0) / arr.length) : 0);
+    return {
+      cloud: average(grouped.cloud),
+      docker: average(grouped.docker),
+      k8s: average(grouped.k8s)
+    };
+  }, [progress]);
+
+  useEffect(() => {
+    const thresholds = [25, 50, 75, 100];
+    ['cloud', 'docker', 'k8s'].forEach((stage) => {
+      thresholds.forEach((milestone) => {
+        const seen = milestonesSeen?.[stage]?.[milestone];
+        if (stagePercents[stage] >= milestone && !seen) {
+          dispatch(markMilestoneSeen({ stage, milestone }));
+          notify?.(`${stage === 'cloud' ? '云计算基础' : stage === 'docker' ? 'Docker' : 'K8s'} 进度已达 ${milestone}%`);
+        }
+      });
+    });
+  }, [stagePercents, milestonesSeen, dispatch, notify]);
+
+  const renderBadges = () => {
+    const items = Object.entries(milestonesSeen || {}).flatMap(([stage, map]) =>
+      Object.keys(map || {}).map((m) => ({ stage, milestone: Number(m) }))
+    );
+    return (
+      <Card title="徽章">
+        {items.length === 0 ? (
+          <Empty description="尚未解锁徽章" image={Empty.PRESENTED_IMAGE_SIMPLE} />
+        ) : (
+          <Space wrap>
+            {items.map((item) => (
+              <Tag key={`${item.stage}-${item.milestone}`} color="gold">
+                {`${item.stage === 'cloud' ? '云计算基础' : item.stage === 'docker' ? 'Docker' : 'K8s'} ${item.milestone}%`}
+              </Tag>
+            ))}
+          </Space>
+        )}
+      </Card>
+    );
+  };
+
   return (
     <Space direction="vertical" size="large" style={{ width: '100%' }}>
+      <Card title="Today · 今日任务提醒" extra={<Button type="link"><Link to="/plan">去学习计划</Link></Button>}>
+        {tasks.length === 0 ? (
+          <Empty description="暂无任务，去专题/资源添加计划" image={Empty.PRESENTED_IMAGE_SIMPLE}>
+            <Space>
+              <Button type="primary"><Link to="/tracks">去专题</Link></Button>
+              <Button><Link to="/resources">去资源</Link></Button>
+            </Space>
+          </Empty>
+        ) : (
+          <Row gutter={16}>
+            <Col span={8}><Statistic title="未完成任务" value={todayStats.count} /></Col>
+            <Col span={8}><Statistic title="最近截止" value={todayStats.nearest} /></Col>
+            <Col span={8}><Statistic title="逾期" value={todayStats.overdue} valueStyle={{ color: todayStats.overdue ? '#ff4d4f' : undefined }} /></Col>
+          </Row>
+        )}
+      </Card>
       <Card title="学习进度概览" extra={<Typography.Text type="secondary">平均完成度 {avgProgress}%</Typography.Text>}>
         {renderProgress()}
       </Card>
@@ -177,6 +279,8 @@ const Home = () => {
       <Card title="最近浏览">
         {renderRecent()}
       </Card>
+
+      {renderBadges()}
     </Space>
   );
 };
