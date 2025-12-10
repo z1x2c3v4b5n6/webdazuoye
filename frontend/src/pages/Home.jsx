@@ -194,7 +194,8 @@ const Home = () => {
     const thresholds = [25, 50, 75, 100];
     ['cloud', 'docker', 'k8s'].forEach((stage) => {
       thresholds.forEach((milestone) => {
-        if (stagePercents[stage] >= milestone && !(milestonesSeen?.[stage] || []).includes(milestone)) {
+        const seen = milestonesSeen?.[stage]?.[milestone];
+        if (stagePercents[stage] >= milestone && !seen) {
           dispatch(markMilestoneSeen({ stage, milestone }));
           notify?.(`${stage === 'cloud' ? '云计算基础' : stage === 'docker' ? 'Docker' : 'K8s'} 进度已达 ${milestone}%`);
         }
@@ -203,8 +204,8 @@ const Home = () => {
   }, [stagePercents, milestonesSeen, dispatch, notify]);
 
   const renderBadges = () => {
-    const items = Object.entries(milestonesSeen || {}).flatMap(([stage, list]) =>
-      (list || []).map((m) => ({ stage, milestone: m }))
+    const items = Object.entries(milestonesSeen || {}).flatMap(([stage, map]) =>
+      Object.keys(map || {}).map((m) => ({ stage, milestone: Number(m) }))
     );
     return (
       <Card title="徽章">

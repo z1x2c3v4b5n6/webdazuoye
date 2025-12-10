@@ -1,20 +1,22 @@
 import { createSlice } from '@reduxjs/toolkit';
 
+export const initialUiState = {
+  theme: typeof window !== 'undefined' ? localStorage.getItem('theme') || 'light' : 'light',
+  recentViews: [],
+  milestonesSeen: {
+    cloud: {},
+    docker: {},
+    k8s: {}
+  },
+  recentSearches: {
+    tracks: [],
+    resources: []
+  }
+};
+
 const uiSlice = createSlice({
   name: 'ui',
-  initialState: {
-    theme: typeof window !== 'undefined' ? localStorage.getItem('theme') || 'light' : 'light',
-    recentViews: [],
-    milestonesSeen: {
-      cloud: [],
-      docker: [],
-      k8s: []
-    },
-    recentSearches: {
-      tracks: [],
-      resources: []
-    }
-  },
+  initialState: initialUiState,
   reducers: {
     toggleTheme(state) {
       state.theme = state.theme === 'light' ? 'dark' : 'light';
@@ -40,10 +42,9 @@ const uiSlice = createSlice({
     markMilestoneSeen(state, action) {
       const { stage, milestone } = action.payload;
       if (!stage || milestone == null) return;
-      const list = state.milestonesSeen[stage] || [];
-      if (!list.includes(milestone)) {
-        state.milestonesSeen[stage] = [...list, milestone];
-      }
+      if (!state.milestonesSeen) state.milestonesSeen = {};
+      if (!state.milestonesSeen[stage]) state.milestonesSeen[stage] = {};
+      state.milestonesSeen[stage][milestone] = true;
     }
   }
 });
